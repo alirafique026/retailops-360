@@ -13,3 +13,10 @@ JOIN olist_order_items oi ON o.order_id = oi.order_id
 WHERE o.order_status = 'delivered'
 GROUP BY FORMAT(o.order_purchase_timestamp, 'yyyy-MM')
 ORDER BY order_month;
+
+-- Renaming 2 columns for consistency
+EXEC sp_rename 'product_category_name_translation.column1', 
+    'product_category_name', 'COLUMN';
+
+EXEC sp_rename 'product_category_name_translation.column2', 
+    'product_category_name_english', 'COLUMN';
