@@ -15,7 +15,7 @@ Tool        : MS SQL Server
 -- 1. Revenue by Product Category
 -- ============================================
 SELECT
-    t.string_field_1 AS category_english,
+    t.product_category_name_english AS category_english,
     COUNT(DISTINCT o.order_id) AS total_orders,
     ROUND(SUM(oi.price), 2) AS total_revenue,
     ROUND(AVG(oi.price), 2) AS avg_item_price,
@@ -26,10 +26,10 @@ JOIN olist_orders o
     ON oi.order_id = o.order_id
 JOIN olist_products p
     ON oi.product_id = p.product_id
-JOIN olist_category_name_translation t
-    ON p.product_category_name = t.string_field_0
+JOIN product_category_name_translation t
+    ON p.product_category_name = t.product_category_name
 WHERE o.order_status = 'delivered'
-GROUP BY t.string_field_1
+GROUP BY t.product_category_name_english
 ORDER BY total_revenue DESC;
 
 
