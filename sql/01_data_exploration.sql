@@ -11,6 +11,8 @@ SELECT
 FROM olist_orders o
 JOIN olist_order_items oi ON o.order_id = oi.order_id
 WHERE o.order_status = 'delivered'
+    AND o.order_purchase_timestamp >= '2017-01-01'
+    AND o.order_purchase_timestamp < '2018-10-01'
 GROUP BY FORMAT(o.order_purchase_timestamp, 'yyyy-MM')
 ORDER BY order_month;
 
