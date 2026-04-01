@@ -7,7 +7,9 @@ Date        : 2026-03-28
 Description : Executive KPI summary covering
               overall business performance,
               delivery metrics, customer
-              satisfaction, and revenue health
+              satisfaction, and revenue health.
+              Note: Data filtered to Jan 2017 -
+              Sep 2018 to exclude partial months.
 Dataset     : Olist Brazilian E-Commerce
 Tool        : MS SQL Server
 ============================================
@@ -27,7 +29,9 @@ SELECT
 FROM olist_orders o
 JOIN olist_order_items oi
     ON o.order_id = oi.order_id
-WHERE o.order_status = 'delivered';
+WHERE o.order_status = 'delivered'
+    AND o.order_purchase_timestamp >= '2017-01-01'
+    AND o.order_purchase_timestamp <  '2018-10-01';
 
 
 -- ============================================
@@ -38,6 +42,8 @@ SELECT
     COUNT(*) AS total_orders,
     ROUND(COUNT(*) * 100.0 / SUM(COUNT(*)) OVER (), 2) AS pct_of_total
 FROM olist_orders
+WHERE order_purchase_timestamp >= '2017-01-01'
+    AND order_purchase_timestamp <  '2018-10-01'
 GROUP BY order_status
 ORDER BY total_orders DESC;
 
@@ -63,19 +69,25 @@ SELECT
     END) * 100.0 / COUNT(*), 2) AS on_time_rate_pct
 FROM olist_orders
 WHERE order_status = 'delivered'
-    AND order_delivered_customer_date IS NOT NULL;
+    AND order_delivered_customer_date IS NOT NULL
+    AND order_purchase_timestamp >= '2017-01-01'
+    AND order_purchase_timestamp <  '2018-10-01';
 
 
 -- ============================================
 -- 4. Customer Satisfaction (Review Scores)
 -- ============================================
 SELECT
-    review_score,
+    r.review_score,
     COUNT(*) AS total_reviews,
     ROUND(COUNT(*) * 100.0 / SUM(COUNT(*)) OVER (), 2) AS pct_of_reviews
-FROM olist_order_reviews
-GROUP BY review_score
-ORDER BY review_score DESC;
+FROM olist_order_reviews r
+JOIN olist_orders o
+    ON r.order_id = o.order_id
+WHERE o.order_purchase_timestamp >= '2017-01-01'
+    AND o.order_purchase_timestamp <  '2018-10-01'
+GROUP BY r.review_score
+ORDER BY r.review_score DESC;
 
 
 -- ============================================
@@ -89,6 +101,8 @@ WITH monthly_revenue AS (
     JOIN olist_order_items oi
         ON o.order_id = oi.order_id
     WHERE o.order_status = 'delivered'
+        AND o.order_purchase_timestamp >= '2017-01-01'
+        AND o.order_purchase_timestamp <  '2018-10-01'
     GROUP BY FORMAT(o.order_purchase_timestamp, 'yyyy-MM')
 )
 SELECT
@@ -102,4 +116,4 @@ SELECT
     2) AS revenue_growth_pct
 FROM monthly_revenue
 ORDER BY order_month;
----
+
