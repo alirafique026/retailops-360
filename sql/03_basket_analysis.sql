@@ -7,7 +7,9 @@ Date        : 2026-03-28
 Description : Market basket analysis —
               identifying products and categories
               frequently purchased together,
-              plus average basket size and value
+              plus average basket size and value.
+              Note: Data filtered to Jan 2017 -
+              Sep 2018 to exclude partial months.
 Dataset     : Olist Brazilian E-Commerce
 Tool        : MS SQL Server
 ============================================
@@ -27,12 +29,14 @@ FROM olist_orders o
 JOIN (
     SELECT
         order_id,
-        COUNT(order_item_id)    AS item_count,
+        COUNT(order_item_id)       AS item_count,
         SUM(price + freight_value) AS basket_value
     FROM olist_order_items
     GROUP BY order_id
 ) AS basket ON o.order_id = basket.order_id
-WHERE o.order_status = 'delivered';
+WHERE o.order_status = 'delivered'
+    AND o.order_purchase_timestamp >= '2017-01-01'
+    AND o.order_purchase_timestamp <  '2018-10-01';
 
 
 -- ============================================
@@ -44,10 +48,14 @@ SELECT
     ROUND(COUNT(*) * 100.0 / SUM(COUNT(*)) OVER (), 2) AS pct_of_orders
 FROM (
     SELECT
-        order_id,
-        COUNT(order_item_id) AS item_count
-    FROM olist_order_items
-    GROUP BY order_id
+        oi.order_id,
+        COUNT(oi.order_item_id) AS item_count
+    FROM olist_order_items oi
+    JOIN olist_orders o
+        ON oi.order_id = o.order_id
+    WHERE o.order_purchase_timestamp >= '2017-01-01'
+        AND o.order_purchase_timestamp <  '2018-10-01'
+    GROUP BY oi.order_id
 ) AS basket_sizes
 GROUP BY item_count
 ORDER BY item_count;
@@ -64,6 +72,8 @@ FROM olist_order_items oi1
 JOIN olist_order_items oi2
     ON  oi1.order_id = oi2.order_id
     AND oi1.product_id < oi2.product_id
+JOIN olist_orders o
+    ON oi1.order_id = o.order_id
 JOIN olist_products p1
     ON oi1.product_id = p1.product_id
 JOIN olist_products p2
@@ -72,6 +82,8 @@ JOIN product_category_name_translation t1
     ON p1.product_category_name = t1.product_category_name
 JOIN product_category_name_translation t2
     ON p2.product_category_name = t2.product_category_name
+WHERE o.order_purchase_timestamp >= '2017-01-01'
+    AND o.order_purchase_timestamp <  '2018-10-01'
 GROUP BY
     t1.product_category_name_english,
     t2.product_category_name_english
@@ -91,5 +103,7 @@ FROM olist_orders o
 JOIN olist_order_items oi
     ON o.order_id = oi.order_id
 WHERE o.order_status = 'delivered'
+    AND o.order_purchase_timestamp >= '2017-01-01'
+    AND o.order_purchase_timestamp <  '2018-10-01'
 GROUP BY o.order_id
 ORDER BY total_basket_value DESC;
