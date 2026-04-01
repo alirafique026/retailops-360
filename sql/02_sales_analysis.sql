@@ -29,6 +29,8 @@ JOIN olist_products p
 JOIN product_category_name_translation t
     ON p.product_category_name = t.product_category_name
 WHERE o.order_status = 'delivered'
+    AND o.order_purchase_timestamp >= '2017-01-01'
+    AND o.order_purchase_timestamp < '2018-10-01'
 GROUP BY t.product_category_name_english
 ORDER BY total_revenue DESC;
 
@@ -44,6 +46,8 @@ FROM olist_orders o
 JOIN olist_order_items oi
     ON o.order_id = oi.order_id
 WHERE o.order_status = 'delivered'
+    AND o.order_purchase_timestamp >= '2017-01-01'
+    AND o.order_purchase_timestamp < '2018-10-01'
 GROUP BY CAST(o.order_purchase_timestamp AS DATE)
 ORDER BY daily_revenue DESC;
 
@@ -60,6 +64,8 @@ FROM olist_orders o
 JOIN olist_order_items oi
     ON o.order_id = oi.order_id
 WHERE o.order_status = 'delivered'
+    AND o.order_purchase_timestamp >= '2017-01-01'
+    AND o.order_purchase_timestamp < '2018-10-01'
 GROUP BY
     DATENAME(WEEKDAY, o.order_purchase_timestamp),
     DATEPART(WEEKDAY, o.order_purchase_timestamp)
