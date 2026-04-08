@@ -19,7 +19,20 @@ Brazilian E-Commerce Public Dataset by Olist (Kaggle)
 - Power BI (dashboard & visualization)
 
 ## Status
-🔄 In Progress
+✅ Complete
+
+## Dashboard Preview
+### Page 1 — Executive Overview
+![Executive Overview](dashboard/page1_executive_overview.png)
+
+### Page 2 — Category Performance
+![Category Performance](dashboard/page2_category_performance.png)
+
+### Page 3 — Customer Segmentation
+![Customer Segmentation](dashboard/page3_customer_segmentation.png)
+
+### Page 4 — Delivery Performance
+![Delivery Performance](dashboard/page4_delivery_performance.png)
 
 ## Author
 Mohammad Ali Rafique
